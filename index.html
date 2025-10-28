@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gioco</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #0f172a, #1e293b, #111827);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    flex-direction: column;
+    transition: background 0.3s;
+  }
+
+  /* Pulsanti principali */
+  button {
+    cursor: pointer;
+    border: none;
+    color: white;
+    font-size: 1.8rem;
+    font-weight: bold;
+    padding: 1rem 2rem;
+    border-radius: 1.5rem;
+    margin: 1rem 0;
+    transition: transform 0.15s, background 0.25s;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+  }
+  button:hover { transform: scale(1.05); }
+  button:active { transform: scale(0.95); }
+
+  /* Home - pulsanti centrati verticalmente */
+  #home {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+  }
+
+  /* Riquadri topic e lettere */
+  .master-topic {
+    font-size: 3rem;
+    font-weight: bold;
+    background: rgba(255,255,255,0.1);
+    padding: 2rem 3rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+    text-align: center;
+    margin: 2rem 0;
+  }
+
+  .letters {
+    display: flex;
+    gap: 1rem;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* Lettere giocatore */
+  .letter {
+    font-size: 3rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, color 0.2s;
+    user-select: none;
+  }
+  .selected {
+    transform: scale(0.7);
+    color: #7f8c8d;
+  }
+
+  /* Container master/player */
+  #master, #player {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    padding-top: 60px; /* per spazio top */
+  }
+
+  /* Freccia indietro in alto a sinistra dello schermo */
+  .back-btn {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    background: rgba(255,255,255,0.1);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    z-index: 100;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .back-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.1); }
+  .back-btn:active { transform: scale(0.95); }
+
+  /* Pulsante di refresh lettere */
+  #refreshLetters {
+    display: none;
+  }
+
+</style>
+</head>
+<body>
+
+<div id="home">
+  <button onclick="goTo('master')" style="background:#2563eb;">MASTER</button>
+  <button onclick="goTo('player')" style="background:#10b981;">CONCORRENTE</button>
+</div>
+
+<div id="master">
+  <div class="back-btn" onclick="goTo('home')">←</div>
+  <div class="master-topic" id="currentTopic"></div>
+  <button onclick="generateTopic()" style="background:#2563eb;">Cambia 🔄</button>
+</div>
+
+<div id="player">
+  <div class="back-btn" onclick="goTo('home')">←</div>
+  <div class="letters" id="lettersContainer"></div>
+  <button id="refreshLetters" onclick="generateLetters()" style="background:#10b981;">Nuove lettere 🔄</button>
+</div>
+
+<script>
+const topics = [
+  'Animali','Personaggi','Film','Canzoni','Cibi','Sport','Paesi','Città','Colori','Oggetti',
+  'Fiori','Frutti','Veicoli','Professioni','Supereroi','Cartoni','Serie TV','Videogiochi','Marche',
+  'Attori','Cantanti','Strumenti musicali','Libri','Artisti','Mestieri','Fiumi','Montagne','Marchi di moda',
+  'App','Tecnologie','Università','Scuole','Nomi propri','Attività','Film Disney','Fantasie','Mostri',
+  'Animali marini','Piante','Bevande','Stati d’Europa','Lingue','Marche di auto','Sportivi','Festival',
+  'Film horror','Superpoteri','Animali volanti','Accessori','Giochi da tavolo'
+];
+
+let usedTopics = [];
+let currentTopic = '';
+let letters = [];
+let selectedLetters = [];
+
+function goTo(page) {
+  document.getElementById('home').style.display = page === 'home' ? 'flex' : 'none';
+  document.getElementById('master').style.display = page === 'master' ? 'flex' : 'none';
+  document.getElementById('player').style.display = page === 'player' ? 'flex' : 'none';
+
+  if(page === 'master') generateTopic();
+  if(page === 'player') generateLetters();
+}
+
+function generateTopic() {
+  let available = topics.filter(t => !usedTopics.includes(t));
+  if(available.length === 0) available = topics;
+  currentTopic = available[Math.floor(Math.random()*available.length)];
+  usedTopics.push(currentTopic);
+  document.getElementById('currentTopic').textContent = currentTopic;
+}
+
+function generateLetters() {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  alphabet.sort(() => 0.5 - Math.random());
+  letters = alphabet.slice(0,5);
+  selectedLetters = [];
+  const container = document.getElementById('lettersContainer');
+  container.innerHTML = '';
+  letters.forEach(letter => {
+    const div = document.createElement('div');
+    div.textContent = letter;
+    div.className = 'letter';
+    div.onclick = () => {
+      if(!selectedLetters.includes(letter)){
+        selectedLetters.push(letter);
+        div.classList.add('selected');
+      }
+      document.getElementById('refreshLetters').style.display = selectedLetters.length === 5 ? 'block' : 'none';
+    }
+    container.appendChild(div);
+  });
+  document.getElementById('refreshLetters').style.display = 'none';
+}
+</script>
+
+</body>
+</html>
