@@ -11,11 +11,9 @@
     background: linear-gradient(135deg, #0f172a, #1e293b, #111827);
     color: white;
     min-height: 100vh;
-    transition: background 0.3s;
     position: relative;
   }
 
-  /* Titolo fisso in alto */
   .title {
     position: fixed;
     top: 10px;
@@ -27,34 +25,30 @@
     z-index: 100;
   }
 
-  /* Pulsanti principali */
   button {
     cursor: pointer;
     border: none;
     color: white;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: bold;
     padding: 1rem 2rem;
     border-radius: 1.5rem;
     margin: 1rem 0;
     transition: transform 0.15s, background 0.25s;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
   }
   button:hover { transform: scale(1.05); }
   button:active { transform: scale(0.95); }
 
-  /* Container centrati */
   .screen {
     display: none;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 80px); /* lascia spazio al titolo */
+    min-height: calc(100vh - 80px);
     width: 100%;
     gap: 2rem;
   }
 
-  /* Riquadri topic e lettere */
   .master-topic {
     font-size: 3rem;
     font-weight: bold;
@@ -72,7 +66,6 @@
     justify-content: center;
   }
 
-  /* Lettere giocatore */
   .letter {
     font-size: 3rem;
     font-weight: bold;
@@ -85,7 +78,6 @@
     color: #7f8c8d;
   }
 
-  /* Freccia indietro in alto a sinistra */
   .back-btn {
     position: fixed;
     top: 15px;
@@ -104,7 +96,6 @@
   .back-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.1); }
   .back-btn:active { transform: scale(0.95); }
 
-  /* Emoji orsetto in basso a destra */
   .teddy-btn {
     position: fixed;
     bottom: 15px;
@@ -117,7 +108,6 @@
   .teddy-btn:hover { transform: scale(1.2); }
   .teddy-btn:active { transform: scale(0.9); }
 
-  /* Popup Halloween */
   #teddyPopup {
     display: none;
     position: fixed;
@@ -135,7 +125,6 @@
     box-shadow: 0 0 20px orange;
   }
 
-  /* Contatore punti */
   #score {
     font-size: 2rem;
     font-weight: bold;
@@ -145,34 +134,30 @@
 </head>
 <body>
 
-<!-- Titolo -->
 <div class="title">TOPICS CHALLENGE</div>
 
-<!-- Home -->
 <div id="home" class="screen">
   <button onclick="goTo('master')" style="background:#2563eb;">MASTER</button>
   <button onclick="goTo('player')" style="background:#10b981;">CONCORRENTE</button>
 </div>
 
-<!-- Master -->
 <div id="master" class="screen">
   <div class="back-btn" onclick="goTo('home')">←</div>
   <div class="master-topic" id="currentTopic"></div>
   <button onclick="generateTopic()" style="background:#2563eb;">Cambia 🔄</button>
 </div>
 
-<!-- Player -->
 <div id="player" class="screen">
   <div class="back-btn" onclick="goTo('home')">←</div>
   <div id="score">Punti: 0</div>
   <div class="letters" id="lettersContainer"></div>
-  <button id="refreshLetters" onclick="generateLetters(true)" style="background:#10b981;">Nuove lettere 🔄</button>
+  <div style="display:flex; gap:1rem; flex-wrap:wrap; justify-content:center;">
+    <button id="refreshLetters" onclick="generateLetters(true)" style="background:#10b981;">Nuove lettere 🔄</button>
+    <button id="changeLetters" onclick="changeAllLetters()" style="background:#ef4444;">Cambia lettere (-2pt)</button>
+  </div>
 </div>
 
-<!-- Emoji orsetto -->
 <div class="teddy-btn" onclick="showTeddy()">🧸</div>
-
-<!-- Popup -->
 <div id="teddyPopup">🎃 by Teddy & Alberto 🎃</div>
 
 <script>
@@ -224,18 +209,50 @@ function generateLetters(addScore) {
         score += 1;
         document.getElementById('score').textContent = `Punti: ${score}`;
       }
+      // Mostra pulsante "Nuove lettere" quando tutte selezionate
       document.getElementById('refreshLetters').style.display = selectedLetters.length === 5 ? 'block' : 'none';
+      // Nasconde "Cambia lettere" quando tutte selezionate
+      document.getElementById('changeLetters').style.display = selectedLetters.length === 5 ? 'none' : 'block';
     }
     container.appendChild(div);
   });
   document.getElementById('refreshLetters').style.display = 'none';
+  document.getElementById('changeLetters').style.display = 'block';
   if(addScore) {
     score += 2;
     document.getElementById('score').textContent = `Punti: ${score}`;
   }
 }
 
-// Funzione popup Teddy
+function changeAllLetters() {
+  score = Math.max(0, score - 2);
+  document.getElementById('score').textContent = `Punti: ${score}`;
+  const container = document.getElementById('lettersContainer');
+  container.innerHTML = '';
+  selectedLetters = [];
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  alphabet.sort(() => 0.5 - Math.random());
+  letters = alphabet.slice(0,5);
+  letters.forEach(letter => {
+    const div = document.createElement('div');
+    div.textContent = letter;
+    div.className = 'letter';
+    div.onclick = () => {
+      if(!selectedLetters.includes(letter)){
+        selectedLetters.push(letter);
+        div.classList.add('selected');
+        score += 1;
+        document.getElementById('score').textContent = `Punti: ${score}`;
+      }
+      document.getElementById('refreshLetters').style.display = selectedLetters.length === 5 ? 'block' : 'none';
+      document.getElementById('changeLetters').style.display = selectedLetters.length === 5 ? 'none' : 'block';
+    }
+    container.appendChild(div);
+  });
+  document.getElementById('refreshLetters').style.display = 'none';
+  document.getElementById('changeLetters').style.display = 'block';
+}
+
 function showTeddy() {
   const popup = document.getElementById('teddyPopup');
   popup.style.display = 'block';
