@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gioco</title>
+<title>Topics Challenge</title>
 <style>
   body {
     margin: 0;
@@ -16,6 +16,17 @@
     min-height: 100vh;
     flex-direction: column;
     transition: background 0.3s;
+    position: relative;
+  }
+
+  /* Titolo */
+  .title {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+    text-shadow: 2px 2px 8px #000;
   }
 
   /* Pulsanti principali */
@@ -87,7 +98,7 @@
     padding-top: 60px; /* per spazio top */
   }
 
-  /* Freccia indietro in alto a sinistra dello schermo */
+  /* Freccia indietro in alto a sinistra */
   .back-btn {
     position: fixed;
     top: 15px;
@@ -106,31 +117,68 @@
   .back-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.1); }
   .back-btn:active { transform: scale(0.95); }
 
-  /* Pulsante di refresh lettere */
-  #refreshLetters {
-    display: none;
+  /* Emoji orsetto in basso a destra */
+  .teddy-btn {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    font-size: 2.5rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+    z-index: 100;
   }
+  .teddy-btn:hover { transform: scale(1.2); }
+  .teddy-btn:active { transform: scale(0.9); }
 
+  /* Popup Halloween */
+  #teddyPopup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #3b0a0a;
+    color: orange;
+    border: 3px solid orange;
+    padding: 3rem 5rem;
+    border-radius: 1.5rem;
+    font-size: 2rem;
+    text-align: center;
+    z-index: 200;
+    box-shadow: 0 0 20px orange;
+  }
 </style>
 </head>
 <body>
 
+<!-- Titolo -->
+<div class="title">TOPICS CHALLENGE</div>
+
+<!-- Home -->
 <div id="home">
   <button onclick="goTo('master')" style="background:#2563eb;">MASTER</button>
   <button onclick="goTo('player')" style="background:#10b981;">CONCORRENTE</button>
 </div>
 
+<!-- Master -->
 <div id="master">
   <div class="back-btn" onclick="goTo('home')">←</div>
   <div class="master-topic" id="currentTopic"></div>
   <button onclick="generateTopic()" style="background:#2563eb;">Cambia 🔄</button>
 </div>
 
+<!-- Player -->
 <div id="player">
   <div class="back-btn" onclick="goTo('home')">←</div>
   <div class="letters" id="lettersContainer"></div>
   <button id="refreshLetters" onclick="generateLetters()" style="background:#10b981;">Nuove lettere 🔄</button>
 </div>
+
+<!-- Emoji orsetto -->
+<div class="teddy-btn" onclick="showTeddy()">🧸</div>
+
+<!-- Popup -->
+<div id="teddyPopup">🎃 by Teddy & Alberto 🎃</div>
 
 <script>
 const topics = [
@@ -185,6 +233,13 @@ function generateLetters() {
     container.appendChild(div);
   });
   document.getElementById('refreshLetters').style.display = 'none';
+}
+
+// Funzione popup Teddy
+function showTeddy() {
+  const popup = document.getElementById('teddyPopup');
+  popup.style.display = 'block';
+  setTimeout(() => { popup.style.display = 'none'; }, 3000);
 }
 </script>
 
