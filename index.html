@@ -43,15 +43,15 @@
   button:hover { transform: scale(1.05); }
   button:active { transform: scale(0.95); }
 
-  /* Home - pulsanti centrati verticalmente */
-  #home {
-    display: flex;
+  /* Container centrati */
+  .screen {
+    display: none;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: calc(100vh - 80px); /* lascia spazio al titolo */
     width: 100%;
-    padding-top: 100px; /* spazio per titolo fisso */
+    gap: 2rem;
   }
 
   /* Riquadri topic e lettere */
@@ -63,13 +63,11 @@
     border-radius: 1.5rem;
     box-shadow: 0 6px 15px rgba(0,0,0,0.4);
     text-align: center;
-    margin: 2rem 0;
   }
 
   .letters {
     display: flex;
     gap: 1rem;
-    margin: 2rem 0;
     flex-wrap: wrap;
     justify-content: center;
   }
@@ -85,16 +83,6 @@
   .selected {
     transform: scale(0.7);
     color: #7f8c8d;
-  }
-
-  /* Container master/player */
-  #master, #player {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    width: 100%;
-    padding-top: 100px; /* per spazio top titolo */
   }
 
   /* Freccia indietro in alto a sinistra */
@@ -150,8 +138,8 @@
   /* Contatore punti */
   #score {
     font-size: 2rem;
-    margin-top: 1rem;
     font-weight: bold;
+    margin-bottom: 1rem;
   }
 </style>
 </head>
@@ -161,20 +149,20 @@
 <div class="title">TOPICS CHALLENGE</div>
 
 <!-- Home -->
-<div id="home">
+<div id="home" class="screen">
   <button onclick="goTo('master')" style="background:#2563eb;">MASTER</button>
   <button onclick="goTo('player')" style="background:#10b981;">CONCORRENTE</button>
 </div>
 
 <!-- Master -->
-<div id="master">
+<div id="master" class="screen">
   <div class="back-btn" onclick="goTo('home')">←</div>
   <div class="master-topic" id="currentTopic"></div>
   <button onclick="generateTopic()" style="background:#2563eb;">Cambia 🔄</button>
 </div>
 
 <!-- Player -->
-<div id="player">
+<div id="player" class="screen">
   <div class="back-btn" onclick="goTo('home')">←</div>
   <div id="score">Punti: 0</div>
   <div class="letters" id="lettersContainer"></div>
@@ -204,10 +192,8 @@ let selectedLetters = [];
 let score = 0;
 
 function goTo(page) {
-  document.getElementById('home').style.display = page === 'home' ? 'flex' : 'none';
-  document.getElementById('master').style.display = page === 'master' ? 'flex' : 'none';
-  document.getElementById('player').style.display = page === 'player' ? 'flex' : 'none';
-
+  document.querySelectorAll('.screen').forEach(s => s.style.display='none');
+  document.getElementById(page).style.display = 'flex';
   if(page === 'master') generateTopic();
   if(page === 'player') generateLetters(false);
 }
@@ -255,6 +241,9 @@ function showTeddy() {
   popup.style.display = 'block';
   setTimeout(() => { popup.style.display = 'none'; }, 3000);
 }
+
+// Mostra home all'avvio
+goTo('home');
 </script>
 
 </body>
