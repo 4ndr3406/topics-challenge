@@ -10,23 +10,21 @@
     font-family: 'Segoe UI', sans-serif;
     background: linear-gradient(135deg, #0f172a, #1e293b, #111827);
     color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     min-height: 100vh;
-    flex-direction: column;
     transition: background 0.3s;
     position: relative;
   }
 
-  /* Titolo */
+  /* Titolo fisso in alto */
   .title {
+    position: fixed;
+    top: 10px;
+    width: 100%;
+    text-align: center;
     font-size: 3rem;
     font-weight: bold;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    text-align: center;
     text-shadow: 2px 2px 8px #000;
+    z-index: 100;
   }
 
   /* Pulsanti principali */
@@ -53,6 +51,7 @@
     align-items: center;
     height: 100vh;
     width: 100%;
+    padding-top: 100px; /* spazio per titolo fisso */
   }
 
   /* Riquadri topic e lettere */
@@ -95,7 +94,7 @@
     align-items: center;
     position: relative;
     width: 100%;
-    padding-top: 60px; /* per spazio top */
+    padding-top: 100px; /* per spazio top titolo */
   }
 
   /* Freccia indietro in alto a sinistra */
@@ -147,6 +146,13 @@
     z-index: 200;
     box-shadow: 0 0 20px orange;
   }
+
+  /* Contatore punti */
+  #score {
+    font-size: 2rem;
+    margin-top: 1rem;
+    font-weight: bold;
+  }
 </style>
 </head>
 <body>
@@ -170,8 +176,9 @@
 <!-- Player -->
 <div id="player">
   <div class="back-btn" onclick="goTo('home')">←</div>
+  <div id="score">Punti: 0</div>
   <div class="letters" id="lettersContainer"></div>
-  <button id="refreshLetters" onclick="generateLetters()" style="background:#10b981;">Nuove lettere 🔄</button>
+  <button id="refreshLetters" onclick="generateLetters(true)" style="background:#10b981;">Nuove lettere 🔄</button>
 </div>
 
 <!-- Emoji orsetto -->
@@ -194,6 +201,7 @@ let usedTopics = [];
 let currentTopic = '';
 let letters = [];
 let selectedLetters = [];
+let score = 0;
 
 function goTo(page) {
   document.getElementById('home').style.display = page === 'home' ? 'flex' : 'none';
@@ -201,7 +209,7 @@ function goTo(page) {
   document.getElementById('player').style.display = page === 'player' ? 'flex' : 'none';
 
   if(page === 'master') generateTopic();
-  if(page === 'player') generateLetters();
+  if(page === 'player') generateLetters(false);
 }
 
 function generateTopic() {
@@ -212,7 +220,7 @@ function generateTopic() {
   document.getElementById('currentTopic').textContent = currentTopic;
 }
 
-function generateLetters() {
+function generateLetters(addScore) {
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
   alphabet.sort(() => 0.5 - Math.random());
   letters = alphabet.slice(0,5);
@@ -227,12 +235,18 @@ function generateLetters() {
       if(!selectedLetters.includes(letter)){
         selectedLetters.push(letter);
         div.classList.add('selected');
+        score += 1;
+        document.getElementById('score').textContent = `Punti: ${score}`;
       }
       document.getElementById('refreshLetters').style.display = selectedLetters.length === 5 ? 'block' : 'none';
     }
     container.appendChild(div);
   });
   document.getElementById('refreshLetters').style.display = 'none';
+  if(addScore) {
+    score += 2;
+    document.getElementById('score').textContent = `Punti: ${score}`;
+  }
 }
 
 // Funzione popup Teddy
